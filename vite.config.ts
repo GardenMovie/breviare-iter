@@ -5,7 +5,12 @@ import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
-  server: {port: 3000},
+  server: {
+    port: 3000,
+    proxy: {
+      "/api": process.env.VITE_API_URL, 
+    },
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

@@ -16,17 +16,14 @@ export function ShortenForm() {
     if (!url) return
     setState({ status: "loading" })
     try {
-      // TODO: replace with real API call
-      // const res = await fetch("/api/shorten", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ url }),
-      // })
-      // const data = await res.json()
-      // if (!res.ok) throw new Error(data.message ?? "Something went wrong")
-      // setState({ status: "done", shortUrl: data.shortUrl })
-      await new Promise((r) => setTimeout(r, 800))
-      setState({ status: "done", shortUrl: `https://brv.re/abc123` })
+      const res = await fetch("/api/v1/links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination: url }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message ?? "Something went wrong")
+      setState({ status: "done", shortUrl: data.data.shortUrl })
     } catch (err) {
       setState({ status: "error", message: err instanceof Error ? err.message : "Something went wrong" })
     }
@@ -77,7 +74,7 @@ export function ShortenForm() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               disabled={loading}
-              className="h-12 text-2xl"
+              className="h-12 "
             />
           </div>
 

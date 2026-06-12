@@ -1,4 +1,4 @@
-import { useState, useRef, KeyboardEvent, ClipboardEvent } from "react"
+import { useState, useRef, type KeyboardEvent, type ClipboardEvent } from "react"
 import { Button } from "@/components/ui/button"
 
 type LookupState =
@@ -76,13 +76,11 @@ export function LookupForm() {
     if (!filled) return
     setState({ status: "loading" })
     try {
-      // TODO: replace with real API call
-      // const res = await fetch(`/api/lookup/${code.join("")}`)
-      // const data = await res.json()
-      // if (!res.ok) throw new Error(data.message ?? "Code not found")
-      // window.location.href = data.url
-      await new Promise((r) => setTimeout(r, 600))
-      window.location.href = `https://example.com/?code=${code.join("")}`
+      const slug = code.join("")
+      const res = await fetch(`/api/v1/links/${slug}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message ?? "Code not found")
+      window.location.href = data.data.shortUrl
     } catch (err) {
       setState({ status: "error", message: err instanceof Error ? err.message : "Code not found" })
     }
