@@ -68,7 +68,7 @@ function CodeInput({
 
 export function LookupForm() {
   const [code, setCode] = useState(["", "", "", "", "", ""])
-  const [state, setState] = useState<LookupState>({ status: "idle" })
+  const [state] = useState<LookupState>({ status: "idle" })
 
   const filled = code.every((c) => c !== "")
 
