@@ -72,18 +72,9 @@ export function LookupForm() {
 
   const filled = code.every((c) => c !== "")
 
-  const handleGo = async () => {
+  const handleGo = () => {
     if (!filled) return
-    setState({ status: "loading" })
-    try {
-      const slug = code.join("")
-      const res = await fetch(`/api/v1/links/${slug}`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message ?? "Code not found")
-      window.location.href = data.data.shortUrl
-    } catch (err) {
-      setState({ status: "error", message: err instanceof Error ? err.message : "Code not found" })
-    }
+    window.location.href = `/${code.join("")}`
   }
 
   const loading = state.status === "loading"
