@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/health", "destination": "@VITE_API_URL/health" },
+    { "source": "/api/:path*", "destination": "@VITE_API_URL/api/:path*" },
+    { "source": "/:code([A-Za-z]{3}-?[A-Za-z]{3})", "destination": "@VITE_API_URL/:code" }
+  ]
+}
