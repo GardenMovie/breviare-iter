@@ -15,6 +15,10 @@ export default defineConfig(({ mode }) => {
         changeOrigin: true,
         rewrite: (path) => path,
       },
+      "/health": {
+        target: env.VITE_API_URL ?? "http://localhost:8080",
+        changeOrigin: true,
+      },
       "^/[A-Za-z]{3}-?[A-Za-z]{3}$": {
         target: env.VITE_API_URL ?? "http://localhost:8080",
         changeOrigin: true,
