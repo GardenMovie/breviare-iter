@@ -11,16 +11,16 @@ export default defineConfig(({ mode }) => {
     port: 3000,
     proxy: {
       "/api": {
-        target: env.VITE_API_URL ?? "http://localhost:8080",
+        target: "http://54.20.64.179:8080",
         changeOrigin: true,
         rewrite: (path) => path,
       },
       "/health": {
-        target: env.VITE_API_URL ?? "http://localhost:8080",
+        target: "http://54.20.64.179:8080",
         changeOrigin: true,
       },
       "^/[A-Za-z]{3}-?[A-Za-z]{3}$": {
-        target: env.VITE_API_URL ?? "http://localhost:8080",
+        target: "http://54.20.64.179:8080",
         changeOrigin: true,
       },
     },

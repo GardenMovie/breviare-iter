@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/health", "destination": "@VITE_API_URL/health" },
-    { "source": "/api/:path*", "destination": "@VITE_API_URL/api/:path*" },
-    { "source": "/:code([A-Za-z]{3}-?[A-Za-z]{3})", "destination": "@VITE_API_URL/:code" }
+    { "source": "/health", "destination": "http://54.20.64.179:8080/health" },
+    { "source": "/api/:path*", "destination": "http://54.20.64.179:8080/api/:path*" },
+    { "source": "/:code([A-Za-z]{3}-?[A-Za-z]{3})", "destination": "http://54.20.64.179:8080/:code" }
   ]
 }
