@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button"
 
 export function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 h-14 border-b px-8 py-2 flex items-center justify-center z-50 bg-background/30 backdrop-blur">
-      <div className="w-[82%] md:w-[60%]">
+    <nav className="fixed top-0 left-0 right-0 h-14 border-b flex items-center justify-center z-50 bg-background/30 backdrop-blur">
+      <div className="w-[80%] md:w-[60%]">
         <Button
           variant="outline"
           onClick={() => window.location.href = "/"}

@@ -38,13 +38,6 @@ export function ShortenForm() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold tracking-tight">Shorten a URL</h2>
-        <p className="text-sm text-muted-foreground">
-          Paste a long link to get a short one.
-        </p>
-      </div>
-
       {state.status === "done" ? (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1 p-4 rounded-lg border border-border bg-muted/40">
@@ -67,14 +60,13 @@ export function ShortenForm() {
       ) : (
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Long URL</label>
             <Input
               type="url"
               placeholder="https://example.com/very/long/url/here"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               disabled={loading}
-              className="h-12 "
+              className="h-14 text-base px-4"
             />
           </div>
 
