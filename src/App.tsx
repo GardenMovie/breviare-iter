@@ -2,9 +2,14 @@ import { Navbar } from "@/components/Navbar"
 import { ShortenForm } from "@/components/ShortenForm"
 import { RegistrationComingSoon } from "@/components/RegistrationComingSoon"
 import { Tagline } from "@/components/Tagline"
+import { UnderConstruction } from "@/components/UnderConstruction"
 import { Card, CardContent } from "@/components/ui/card"
 
 export function App() {
+  if (import.meta.env.VITE_UNDER_CONSTRUCTION === "true") {
+    return <UnderConstruction />
+  }
+
   const isRegistration = window.location.pathname === "/registration"
 
   return (
