@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar"
 import { ShortenForm } from "@/components/ShortenForm"
-import { RegistrationComingSoon } from "@/components/RegistrationComingSoon"
+import { SignIn } from "@/components/SignIn"
 import { Tagline } from "@/components/Tagline"
 import { UnderConstruction } from "@/components/UnderConstruction"
 import { Card, CardContent } from "@/components/ui/card"
@@ -17,7 +17,7 @@ export function App() {
       <Navbar />
       <main className="flex flex-1 items-center justify-center">
         {isRegistration ? (
-          <RegistrationComingSoon />
+          <SignIn />
         ) : (
           <div className="w-[80%] md:w-[40%] mb-14 flex flex-col gap-10">
             <Tagline />
