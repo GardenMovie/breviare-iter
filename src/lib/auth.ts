@@ -10,8 +10,15 @@ export type AuthResponse = {
 }
 
 async function parseJsonResponse<T>(res: Response): Promise<T> {
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error?.message ?? data.message ?? "Something went wrong")
+  const data = await res.json().catch(() => null)
+  if (!res.ok) {
+    const message =
+      (typeof data?.error === "object" ? data.error?.message : null) ??
+      data?.message ??
+      (typeof data?.error === "string" ? data.error : null) ??
+      `Request failed (${res.status})`
+    throw new Error(message)
+  }
   return data.data as T
 }
 

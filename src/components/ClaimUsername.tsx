@@ -12,12 +12,15 @@ export function ClaimUsername() {
   const { accessToken, setUser } = useAuth()
   const [username, setUsername] = useState("")
   const [availability, setAvailability] = useState<Availability | null>(null)
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const isValidFormat = USERNAME_PATTERN.test(username)
 
   useEffect(() => {
+    setAvailability(null)
+    setAvailabilityError(null)
     if (!accessToken || !isValidFormat) return
     let cancelled = false
     const timeout = setTimeout(() => {
@@ -26,8 +29,11 @@ export function ClaimUsername() {
         .then((available) => {
           if (!cancelled) setAvailability(available ? "available" : "taken")
         })
-        .catch(() => {
-          if (!cancelled) setAvailability("error")
+        .catch((err) => {
+          console.error("username availability check failed", err)
+          if (cancelled) return
+          setAvailability("error")
+          setAvailabilityError(err instanceof Error ? err.message : String(err))
         })
     }, 400)
     return () => {
@@ -79,7 +85,9 @@ export function ClaimUsername() {
           <p className="text-sm text-destructive">Already taken</p>
         )}
         {effectiveAvailability === "error" && (
-          <p className="text-sm text-destructive">Couldn't check availability</p>
+          <p className="text-sm text-destructive">
+            Couldn't check availability{availabilityError ? `: ${availabilityError}` : ""}
+          </p>
         )}
       </div>
 
