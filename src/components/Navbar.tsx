@@ -48,7 +48,7 @@ export function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() => window.location.href = `/${user.username ?? ""}`}
+                  onClick={() => window.location.href = "/me"}
                 >
                   <User />
                   View profile
@@ -56,7 +56,7 @@ export function Navbar() {
                 <DropdownMenuItem
                   onClick={() =>
                     navigator.clipboard.writeText(
-                      `${window.location.origin}/${user.username ?? ""}`
+                      `${window.location.origin}/u/${user.username ?? ""}`
                     )
                   }
                 >
@@ -80,7 +80,7 @@ export function Navbar() {
               aria-label="Sign in"
               title="Sign in"
               className="w-auto h-full aspect-square"
-              onClick={() => window.location.href = "/"}
+              onClick={() => window.location.href = "/registration"}
             >
               <LogIn className="size-1/2" />
             </Button>
