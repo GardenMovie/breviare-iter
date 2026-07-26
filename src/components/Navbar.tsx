@@ -11,7 +11,7 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 
 export function Navbar() {
-  const { user, signOut } = useAuth()
+  const { user, loading, signOut } = useAuth()
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/30 backdrop-blur">
@@ -34,7 +34,17 @@ export function Navbar() {
         </Button>
         {/* Desktop links */}
         <div className="hidden h-full sm:flex gap-3 text-sm text-muted-foreground">
-          {user ? (
+          {loading ? (
+            <Button
+              variant="outline"
+              size="icon"
+              disabled
+              aria-label="Loading"
+              className="w-auto h-full aspect-square"
+            >
+              <User className="size-1/2 animate-pulse" />
+            </Button>
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

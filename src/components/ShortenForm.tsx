@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/hooks/use-auth"
+import { createLink } from "@/lib/links"
 
 type ShortenState =
   | { status: "idle" }
@@ -9,6 +11,7 @@ type ShortenState =
   | { status: "error"; message: string }
 
 export function ShortenForm() {
+  const { accessToken } = useAuth()
   const [url, setUrl] = useState("")
   const [state, setState] = useState<ShortenState>({ status: "idle" })
 
@@ -16,14 +19,8 @@ export function ShortenForm() {
     if (!url) return
     setState({ status: "loading" })
     try {
-      const res = await fetch("/api/v1/links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ destination: url }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message ?? "Something went wrong")
-      setState({ status: "done", shortUrl: data.data.shortUrl })
+      const { shortUrl } = await createLink(url, accessToken)
+      setState({ status: "done", shortUrl })
     } catch (err) {
       setState({ status: "error", message: err instanceof Error ? err.message : "Something went wrong" })
     }

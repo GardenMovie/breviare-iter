@@ -1,0 +1,108 @@
+import { useState } from "react"
+import { Check, Copy } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { LinkSparkline } from "@/components/LinkSparkline"
+import { useAuth } from "@/hooks/use-auth"
+import { useLinks } from "@/hooks/use-links"
+
+export function Profile() {
+  const { user } = useAuth()
+  const state = useLinks()
+  const [copiedCode, setCopiedCode] = useState<string | null>(null)
+  const [profileCopied, setProfileCopied] = useState(false)
+
+  const handleCopy = async (code: string, shortUrl: string) => {
+    await navigator.clipboard.writeText(shortUrl)
+    setCopiedCode(code)
+    setTimeout(() => setCopiedCode((current) => (current === code ? null : current)), 1500)
+  }
+
+  const profileUrl = `${window.location.origin}/u/${user?.username ?? ""}`
+
+  const handleCopyProfileUrl = async () => {
+    await navigator.clipboard.writeText(profileUrl)
+    setProfileCopied(true)
+    setTimeout(() => setProfileCopied(false), 1500)
+  }
+
+  return (
+    <div className="w-[90%] md:w-[50%] mb-14 flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-1.5">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {user?.username ? user.username : "Your links"}
+          </h1>
+          {user?.username && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="shrink-0"
+              onClick={handleCopyProfileUrl}
+            >
+              {profileCopied ? <Check /> : <Copy />}
+            </Button>
+          )}
+        </div>
+        <p className="text-muted-foreground">
+          {user?.username ? (
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              linkedin.com/in/{user.username}
+            </a>
+          ) : (
+            "Manage your shortened links and analytics."
+          )}
+        </p>
+      </div>
+
+      {state.status === "loading" && (
+        <p className="text-sm text-muted-foreground">Loading your links…</p>
+      )}
+
+      {state.status === "error" && (
+        <p className="text-sm text-destructive">{state.message}</p>
+      )}
+
+      {state.status === "done" && state.links.length === 0 && (
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            You haven't shortened any links yet.
+          </CardContent>
+        </Card>
+      )}
+
+      {state.status === "done" &&
+        state.links.map((link) => (
+          <Card key={link.code}>
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono text-sm text-foreground truncate">{link.displayCode}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="shrink-0"
+                      onClick={() => handleCopy(link.code, link.shortUrl)}
+                    >
+                      {copiedCode === link.code ? <Check /> : <Copy />}
+                    </Button>
+                  </div>
+                  <span className="text-xs text-muted-foreground truncate">{link.destination}</span>
+                </div>
+                <span className="text-sm text-muted-foreground shrink-0">
+                  {link.clickCount} click{link.clickCount === 1 ? "" : "s"}
+                </span>
+              </div>
+              <LinkSparkline code={link.code} />
+            </CardContent>
+          </Card>
+        ))}
+    </div>
+  )
+}
