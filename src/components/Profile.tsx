@@ -1,21 +1,49 @@
 import { useState } from "react"
-import { Check, Copy } from "lucide-react"
+import { Check, Copy, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { LinkSparkline } from "@/components/LinkSparkline"
 import { useAuth } from "@/hooks/use-auth"
 import { useLinks } from "@/hooks/use-links"
+import { deleteLink } from "@/lib/links"
 
 export function Profile() {
-  const { user } = useAuth()
+  const { user, accessToken } = useAuth()
   const state = useLinks()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [profileCopied, setProfileCopied] = useState(false)
+  const [deletingCode, setDeletingCode] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const handleCopy = async (code: string, shortUrl: string) => {
     await navigator.clipboard.writeText(shortUrl)
     setCopiedCode(code)
     setTimeout(() => setCopiedCode((current) => (current === code ? null : current)), 1500)
+  }
+
+  const handleDelete = async (code: string) => {
+    if (!accessToken) return
+    setDeletingCode(code)
+    setDeleteError(null)
+    try {
+      await deleteLink(code, accessToken)
+      state.removeLink(code)
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Failed to delete link")
+    } finally {
+      setDeletingCode(null)
+    }
   }
 
   const profileUrl = `${window.location.origin}/u/${user?.username ?? ""}`
@@ -68,6 +96,8 @@ export function Profile() {
         <p className="text-sm text-destructive">{state.message}</p>
       )}
 
+      {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
+
       {state.status === "done" && state.links.length === 0 && (
         <Card>
           <CardContent className="text-sm text-muted-foreground">
@@ -95,9 +125,37 @@ export function Profile() {
                   </div>
                   <span className="text-xs text-muted-foreground truncate">{link.destination}</span>
                 </div>
-                <span className="text-sm text-muted-foreground shrink-0">
-                  {link.clickCount} click{link.clickCount === 1 ? "" : "s"}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-sm text-muted-foreground">
+                    {link.clickCount} click{link.clickCount === 1 ? "" : "s"}
+                  </span>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-destructive">
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete this link?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete{" "}
+                          <span className="font-mono text-foreground">{link.displayCode}</span> and its
+                          analytics. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(link.code)}
+                          disabled={deletingCode === link.code}
+                        >
+                          {deletingCode === link.code ? "Deleting…" : "Delete"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
               <LinkSparkline code={link.code} />
             </CardContent>

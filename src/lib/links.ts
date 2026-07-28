@@ -46,6 +46,22 @@ export async function fetchLinkAnalytics(code: string, accessToken: string): Pro
   return data.dailyClicks
 }
 
+export async function deleteLink(code: string, accessToken: string): Promise<void> {
+  const res = await fetch(`/api/v1/links/${code}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => null)
+    const message =
+      (typeof data?.error === "object" ? data.error?.message : null) ??
+      data?.message ??
+      (typeof data?.error === "string" ? data.error : null) ??
+      `Request failed (${res.status})`
+    throw new Error(message)
+  }
+}
+
 export async function createLink(destination: string, accessToken?: string | null): Promise<{ shortUrl: string }> {
   const res = await fetch("/api/v1/links", {
     method: "POST",

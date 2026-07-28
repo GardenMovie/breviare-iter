@@ -32,5 +32,13 @@ export function useLinks() {
     }
   }, [accessToken])
 
-  return state
+  const removeLink = (code: string) => {
+    setState((current) =>
+      current.status === "done"
+        ? { ...current, links: current.links.filter((link) => link.code !== code) }
+        : current
+    )
+  }
+
+  return { ...state, removeLink }
 }
