@@ -45,12 +45,12 @@ export function Navbar() {
               <User className="size-1/2 animate-pulse" />
             </Button>
           ) : user ? (
-            <DropdownMenu>
+              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="w-auto h-full aspect-square"
+                  className="w-auto h-full aspect-square hover:text-blue-500"
                   aria-label="Profile"
                 >
                   <User className="size-1/2" />
@@ -89,7 +89,7 @@ export function Navbar() {
               size="icon"
               aria-label="Sign in"
               title="Sign in"
-              className="w-auto h-full aspect-square"
+              className="w-auto h-full aspect-square hover:text-blue-500"
               onClick={() => window.location.href = "/registration"}
             >
               <LogIn className="size-1/2" />

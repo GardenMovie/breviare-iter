@@ -7,7 +7,7 @@ export function Tagline() {
       <h1 className="text-4xl font-semibold tracking-tight">
         Shorten. Share.{" "}
         {user ? (
-          <a href="/u/me" className="text-blue-500 hover:text-blue-500/80">
+          <a href="/me" className="text-blue-500 hover:text-blue-500/80">
             Track! </a>)
         :
         (<a href="/registration" className="text-blue-500 hover:text-blue-500/80">
