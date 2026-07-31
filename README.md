@@ -1,29 +1,36 @@
 # Breviare
 
-The web frontend for **Breviare**, a URL shortener. Turn long links into short
-ones in seconds — and, once signed in, claim a username and track your links.
+The web frontend for **Breviare**, a URL shortener. Shorten a link in seconds — no
+account required — or sign in with Google to claim a username, track click analytics,
+and manage your links.
 
 Built with React 19, TypeScript, Vite, Tailwind CSS v4, and shadcn/ui.
+
+This repo is the **frontend** only. The backend (Spring Boot / Java) can be found [here](https://github.com/GardenMovie/breviare-scriptor)
 
 ## Features
 
 - **Shorten** any URL from the landing page — no account required.
 - **Sign in with Google** (Google Identity Services / OAuth) to register.
-- **Claim a username** and check its availability before claiming.
+- **Claim a username**, checking availability before claiming — it doubles as your
+  vanity redirect slug (`/u/<username>`).
+- **Profile page** (`/me`) listing your links with 7-day click sparklines, plus
+  link deletion with a confirmation dialog.
 - Copy the short link to the clipboard and shorten another in one click.
 - Light/dark theming via a theme provider.
 
 ## How it works
 
-This repo is the frontend only. It talks to the Breviare backend API over
-`/api/v1/*`. In development, Vite proxies API traffic to the backend; in
-production, `vercel.json` rewrites do the same. Both currently point at
-`http://54.20.64.179:8080`.
+This repo talks to the Breviare backend API over `/api/v1/*`. In development, Vite
+proxies API traffic to the backend; in production, `vercel.json` rewrites do the
+same.
 
-Key routes handled by the frontend:
+Routes handled by the frontend:
 
 - `/` — landing page with the shorten form.
 - `/registration` — Google sign-in and username claiming.
+- `/me` — signed-in user's profile: link list, analytics, deletion. Redirects to
+  `/registration` if not signed in.
 - Short codes (e.g. `/abc-def`) are proxied to the backend for redirection.
 
 Relevant API endpoints consumed by the client:
@@ -34,8 +41,11 @@ Relevant API endpoints consumed by the client:
 | `POST /api/v1/auth/google` | Sign in with a Google ID token |
 | `POST /api/v1/auth/refresh` | Refresh the session |
 | `POST /api/v1/auth/logout` | Log out |
+| `GET /api/v1/users/me` / `PATCH` / `DELETE` | Manage the current user's account |
+| `GET /api/v1/users/me/links` | List the current user's links with 7-day click stats |
 | `GET /api/v1/users/username-availability` | Check if a username is free |
-| `POST /api/v1/users/username` | Claim a username |
+| `POST /api/v1/users/username` | Claim or change a username |
+| `DELETE /api/v1/links/{code}` | Delete a link |
 
 ## Getting started
 
@@ -88,10 +98,10 @@ The app runs on [http://localhost:3000](http://localhost:3000). API requests to
 
 ```
 src/
-├── components/        UI components (ShortenForm, SignIn, Navbar, …)
-│   └── ui/            shadcn/ui primitives (button, card, input)
-├── hooks/             Auth context and Google Identity Services hooks
-├── lib/               API client (auth.ts) and utilities
+├── components/        UI components (ShortenForm, SignIn, Navbar, Profile, …)
+│   └── ui/            shadcn/ui primitives (button, card, input, alert-dialog, chart, dropdown-menu)
+├── hooks/             Auth context, Google Identity Services, link/analytics hooks
+├── lib/               API clients (auth.ts, links.ts) and utilities
 ├── types/             Google Identity type declarations
 ├── App.tsx            Root component and routing
 └── main.tsx           App entry point
