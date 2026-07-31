@@ -6,6 +6,8 @@ and manage your links.
 
 Built with React 19, TypeScript, Vite, Tailwind CSS v4, and shadcn/ui.
 
+![Home](images/breviareHome.png)
+
 This repo is the **frontend** only. The backend (Spring Boot / Java) can be found [here](https://github.com/GardenMovie/breviare-scriptor)
 
 ## Features
