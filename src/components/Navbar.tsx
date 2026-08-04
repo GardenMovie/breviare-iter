@@ -32,8 +32,7 @@ export function Navbar() {
             Breviare
           </a>
         </Button>
-        {/* Desktop links */}
-        <div className="hidden h-full sm:flex gap-3 text-sm text-muted-foreground">
+        <div className="flex h-full gap-3 text-sm text-muted-foreground">
           {loading ? (
             <Button
               variant="outline"
