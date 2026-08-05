@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/hooks/use-auth"
+import { buildVanityUrl } from "@/lib/vanity"
 
 export function Navbar() {
   const { user, loading, signOut } = useAuth()
@@ -62,16 +63,16 @@ export function Navbar() {
                   <User />
                   View profile
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      `${window.location.origin}/u/${user.username ?? ""}`
-                    )
-                  }
-                >
-                  <LinkIcon />
-                  Copy link
-                </DropdownMenuItem>
+                {user.username && (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      navigator.clipboard.writeText(buildVanityUrl(user.username!))
+                    }
+                  >
+                    <LinkIcon />
+                    Copy link
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"

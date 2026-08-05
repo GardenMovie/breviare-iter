@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { GoogleSignInButton } from "@/components/GoogleSignInButton"
 import { ClaimUsername } from "@/components/ClaimUsername"
@@ -36,9 +37,12 @@ export function SignIn() {
 
   if (user) {
     return (
-      <div className="w-[90%] md:w-[40%] mb-14 flex flex-col gap-2 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight">You're signed in</h1>
-        <p className="text-muted-foreground">Welcome back, {user.username}.</p>
+      <div className="w-[90%] md:w-[40%] mb-14 flex flex-col gap-4 text-center items-center">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight">You're signed in</h1>
+          <p className="text-muted-foreground">Welcome back, {user.username}.</p>
+        </div>
+        <Button onClick={() => (window.location.href = "/me")}>Go to your profile</Button>
       </div>
     )
   }
