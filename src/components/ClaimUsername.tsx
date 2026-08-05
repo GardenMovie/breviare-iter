@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ApiError } from "@/lib/api"
 import { checkUsernameAvailability, claimUsername } from "@/lib/auth"
 import { useAuth } from "@/hooks/use-auth"
 
@@ -35,7 +36,7 @@ export function ClaimUsername() {
           setAvailability("error")
           setAvailabilityError(err instanceof Error ? err.message : String(err))
         })
-    }, 400)
+    }, 300)
     return () => {
       cancelled = true
       clearTimeout(timeout)
@@ -51,8 +52,18 @@ export function ClaimUsername() {
     try {
       const user = await claimUsername(username, accessToken)
       setUser(user)
+      window.location.href = "/me"
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong")
+      // Availability is not authoritative — two users can race for the same
+      // name, so a 409 is expected here even after an "available" check.
+      if (err instanceof ApiError && err.status === 409) {
+        setAvailability("taken")
+        setError("That username was just taken. Try another.")
+      } else if (err instanceof ApiError) {
+        setError(err.firstDetail ?? err.message)
+      } else {
+        setError(err instanceof Error ? err.message : "Something went wrong")
+      }
     } finally {
       setSubmitting(false)
     }
