@@ -48,6 +48,7 @@ export function Profile() {
     }
   }
 
+  // The `/u/<username>` redirect link, not the destination it points at.
   const profileUrl = user?.username ? buildVanityUrl(user.username) : null
 
   const handleCopyProfileUrl = async () => {
@@ -72,29 +73,12 @@ export function Profile() {
               onClick={handleCopyProfileUrl}
             >
               {profileCopied ? <Check /> : <Copy />}
+              <span className="sr-only">Copy your vanity link</span>
             </Button>
           )}
         </div>
-        <p className="text-muted-foreground text-sm">
-          {user?.vanityDestination ? (
-            <>
-              Points to{" "}
-              <a
-                href={user.vanityDestination}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono hover:underline"
-              >
-                {user.vanityDestination.replace(/^https?:\/\//, "")}
-              </a>
-            </>
-          ) : (
-            "Manage your shortened links and analytics."
-          )}
-        </p>
+        <VanityDestinationForm />
       </div>
-
-      <VanityDestinationForm />
 
       {state.status === "loading" && (
         <p className="text-sm text-muted-foreground">Loading your links…</p>
