@@ -96,8 +96,15 @@ export function VanityDestinationForm() {
 
   return (
     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-      <a href={vanityUrl} className="font-mono truncate hover:underline">
-        {vanityUrl.replace(/^https?:\/\//, "")}
+      {/* Link straight to the destination so the label doubles as a preview of
+          where `/u/<username>` lands; fall back to the redirect itself when
+          nothing is set yet. */}
+      <a
+        href={current || vanityUrl}
+        className="font-mono truncate hover:underline"
+        {...(current ? { target: "_blank", rel: "noreferrer noopener" } : {})}
+      >
+        {(current || vanityUrl).replace(/^https?:\/\//, "")}
       </a>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
