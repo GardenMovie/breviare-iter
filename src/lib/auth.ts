@@ -1,7 +1,15 @@
+import { apiRequest, setAccessToken } from "@/lib/api"
+
 export type User = {
   id: string
   email: string
   username: string | null
+  vanityDestination: string | null
+  usernameChangedAt: string | null
+  usernameChangesRemainingThisMonth: number
+  vanityDestinationChangedAt: string | null
+  vanityDestinationChangesRemainingThisMonth: number
+  createdAt: string
 }
 
 export type AuthResponse = {
@@ -9,64 +17,67 @@ export type AuthResponse = {
   accessToken: string
 }
 
-async function parseJsonResponse<T>(res: Response): Promise<T> {
-  const data = await res.json().catch(() => null)
-  if (!res.ok) {
-    const message =
-      (typeof data?.error === "object" ? data.error?.message : null) ??
-      data?.message ??
-      (typeof data?.error === "string" ? data.error : null) ??
-      `Request failed (${res.status})`
-    throw new Error(message)
-  }
-  return data.data as T
-}
-
 export async function signInWithGoogle(idToken: string): Promise<AuthResponse> {
-  const res = await fetch("/api/v1/auth/google", {
+  const res = await apiRequest<AuthResponse>("/api/v1/auth/google", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ idToken }),
+    body: { idToken },
+    auth: false,
   })
-  return parseJsonResponse<AuthResponse>(res)
+  setAccessToken(res.accessToken)
+  return res
 }
 
 export async function refreshSession(): Promise<AuthResponse> {
-  const res = await fetch("/api/v1/auth/refresh", {
+  const res = await apiRequest<AuthResponse>("/api/v1/auth/refresh", {
     method: "POST",
-    credentials: "include",
+    auth: false,
   })
-  return parseJsonResponse<AuthResponse>(res)
+  setAccessToken(res.accessToken)
+  return res
 }
 
 export async function logout(): Promise<void> {
-  await fetch("/api/v1/auth/logout", {
-    method: "POST",
-    credentials: "include",
-  })
+  await apiRequest<void>("/api/v1/auth/logout", { method: "POST", auth: false })
+  setAccessToken(null)
+}
+
+export async function fetchMe(accessToken?: string | null): Promise<User> {
+  return apiRequest<User>("/api/v1/users/me", { token: accessToken })
 }
 
 export async function checkUsernameAvailability(
   username: string,
-  accessToken: string,
+  accessToken?: string | null,
 ): Promise<boolean> {
-  const res = await fetch(
+  const data = await apiRequest<{ available: boolean }>(
     `/api/v1/users/username-availability?username=${encodeURIComponent(username)}`,
-    { headers: { Authorization: `Bearer ${accessToken}` } },
+    { token: accessToken },
   )
-  const data = await parseJsonResponse<{ available: boolean }>(res)
   return data.available
 }
 
-export async function claimUsername(username: string, accessToken: string): Promise<User> {
-  const res = await fetch("/api/v1/users/username", {
+/** First claim only — changing an existing username goes through updateProfile. */
+export async function claimUsername(username: string, accessToken?: string | null): Promise<User> {
+  return apiRequest<User>("/api/v1/users/username", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ username }),
+    body: { username },
+    token: accessToken,
   })
-  return parseJsonResponse<User>(res)
+}
+
+export type ProfileUpdate = {
+  username?: string
+  /** "" clears the destination; omit the key to leave it untouched. */
+  vanityDestination?: string
+}
+
+export async function updateProfile(
+  update: ProfileUpdate,
+  accessToken?: string | null,
+): Promise<User> {
+  return apiRequest<User>("/api/v1/users/me", {
+    method: "PATCH",
+    body: update,
+    token: accessToken,
+  })
 }

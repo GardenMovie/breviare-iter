@@ -1,3 +1,5 @@
+import { apiRequest } from "@/lib/api"
+
 export type LinkAnalytics = {
   code: string
   displayCode: string
@@ -13,24 +15,8 @@ export type LinkAnalytics = {
   expiredAt: string | null
 }
 
-async function parseJsonResponse<T>(res: Response): Promise<T> {
-  const data = await res.json().catch(() => null)
-  if (!res.ok) {
-    const message =
-      (typeof data?.error === "object" ? data.error?.message : null) ??
-      data?.message ??
-      (typeof data?.error === "string" ? data.error : null) ??
-      `Request failed (${res.status})`
-    throw new Error(message)
-  }
-  return data.data as T
-}
-
-export async function fetchMyLinks(accessToken: string): Promise<LinkAnalytics[]> {
-  const res = await fetch("/api/v1/users/me/links", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  })
-  return parseJsonResponse<LinkAnalytics[]>(res)
+export async function fetchMyLinks(accessToken?: string | null): Promise<LinkAnalytics[]> {
+  return apiRequest<LinkAnalytics[]>("/api/v1/users/me/links", { token: accessToken })
 }
 
 export type DailyClicks = {
@@ -38,38 +24,29 @@ export type DailyClicks = {
   clicks: number
 }
 
-export async function fetchLinkAnalytics(code: string, accessToken: string): Promise<DailyClicks[]> {
-  const res = await fetch(`/api/v1/links/${code}/analytics`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  })
-  const data = await parseJsonResponse<{ dailyClicks: DailyClicks[] }>(res)
+export async function fetchLinkAnalytics(
+  code: string,
+  accessToken?: string | null,
+): Promise<DailyClicks[]> {
+  const data = await apiRequest<{ dailyClicks: DailyClicks[] }>(
+    `/api/v1/links/${code}/analytics`,
+    { token: accessToken },
+  )
   return data.dailyClicks
 }
 
-export async function deleteLink(code: string, accessToken: string): Promise<void> {
-  const res = await fetch(`/api/v1/links/${code}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${accessToken}` },
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => null)
-    const message =
-      (typeof data?.error === "object" ? data.error?.message : null) ??
-      data?.message ??
-      (typeof data?.error === "string" ? data.error : null) ??
-      `Request failed (${res.status})`
-    throw new Error(message)
-  }
+export async function deleteLink(code: string, accessToken?: string | null): Promise<void> {
+  await apiRequest<void>(`/api/v1/links/${code}`, { method: "DELETE", token: accessToken })
 }
 
-export async function createLink(destination: string, accessToken?: string | null): Promise<{ shortUrl: string }> {
-  const res = await fetch("/api/v1/links", {
+export async function createLink(
+  destination: string,
+  accessToken?: string | null,
+): Promise<{ shortUrl: string }> {
+  return apiRequest<{ shortUrl: string }>("/api/v1/links", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-    },
-    body: JSON.stringify({ destination }),
+    body: { destination },
+    auth: Boolean(accessToken),
+    token: accessToken,
   })
-  return parseJsonResponse<{ shortUrl: string }>(res)
 }
