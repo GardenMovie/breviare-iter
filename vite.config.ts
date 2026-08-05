@@ -18,6 +18,10 @@ export default defineConfig(() => {
         target: "http://54.20.64.179:8080",
         changeOrigin: true,
       },
+      "/u/": {
+        target: "http://54.20.64.179:8080",
+        changeOrigin: true,
+      },
       "^/[A-Za-z]{3}-?[A-Za-z]{3}$": {
         target: "http://54.20.64.179:8080",
         changeOrigin: true,
