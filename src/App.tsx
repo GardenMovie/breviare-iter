@@ -43,9 +43,9 @@ export function App() {
   }
 
   return (
-    <div className="min-h-svh bg-background text-foreground flex flex-col">
+    <div className="min-h-svh bg-background text-foreground flex flex-col pt-14">
       <Navbar />
-      <main className="flex flex-1 items-center justify-center">{renderMain()}</main>
+      <main className="flex flex-1 items-center justify-center py-6">{renderMain()}</main>
     </div>
   )
 }
