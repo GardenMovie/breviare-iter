@@ -14,9 +14,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { LinkSparkline } from "@/components/LinkSparkline"
+import { VanityDestinationForm } from "@/components/VanityDestinationForm"
 import { useAuth } from "@/hooks/use-auth"
 import { useLinks } from "@/hooks/use-links"
 import { deleteLink } from "@/lib/links"
+import { buildVanityUrl } from "@/lib/vanity"
 
 export function Profile() {
   const { user, accessToken } = useAuth()
@@ -46,9 +48,10 @@ export function Profile() {
     }
   }
 
-  const profileUrl = `${window.location.origin}/u/${user?.username ?? ""}`
+  const profileUrl = user?.username ? buildVanityUrl(user.username) : null
 
   const handleCopyProfileUrl = async () => {
+    if (!profileUrl) return
     await navigator.clipboard.writeText(profileUrl)
     setProfileCopied(true)
     setTimeout(() => setProfileCopied(false), 1500)
@@ -61,7 +64,7 @@ export function Profile() {
           <h1 className="text-3xl font-semibold tracking-tight">
             {user?.username ? user.username : "Your links"}
           </h1>
-          {user?.username && (
+          {profileUrl && (
             <Button
               variant="ghost"
               size="icon-sm"
@@ -72,21 +75,26 @@ export function Profile() {
             </Button>
           )}
         </div>
-        <p className="text-muted-foreground">
-          {user?.username ? (
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              linkedin.com/in/{user.username}
-            </a>
+        <p className="text-muted-foreground text-sm">
+          {user?.vanityDestination ? (
+            <>
+              Points to{" "}
+              <a
+                href={user.vanityDestination}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono hover:underline"
+              >
+                {user.vanityDestination.replace(/^https?:\/\//, "")}
+              </a>
+            </>
           ) : (
             "Manage your shortened links and analytics."
           )}
         </p>
       </div>
+
+      <VanityDestinationForm />
 
       {state.status === "loading" && (
         <p className="text-sm text-muted-foreground">Loading your links…</p>
