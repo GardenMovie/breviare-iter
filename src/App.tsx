@@ -1,3 +1,4 @@
+import { About } from "@/components/About"
 import { Navbar } from "@/components/Navbar"
 import { Profile } from "@/components/Profile"
 import { ShortenForm } from "@/components/ShortenForm"
@@ -17,8 +18,11 @@ export function App() {
   const pathname = window.location.pathname
   const isRegistration = pathname === "/registration"
   const isProfile = pathname === "/me"
+  const isAbout = pathname === "/about"
 
   const renderMain = () => {
+    if (isAbout) return <About />
+
     if (isRegistration) return <SignIn />
 
     if (isProfile) {

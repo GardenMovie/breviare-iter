@@ -1,4 +1,4 @@
-import { LogIn, LogOut, Link as LinkIcon, User } from "lucide-react"
+import { Info, LogIn, LogOut, Link as LinkIcon, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -34,6 +34,17 @@ export function Navbar() {
           </a>
         </Button>
         <div className="flex h-full gap-3 text-sm text-muted-foreground">
+          <Button
+            variant="outline"
+            size="icon"
+            asChild
+            className="w-auto h-full aspect-square hover:text-blue-500"
+            aria-label="About"
+          >
+            <a href="/about" title="About">
+              <Info className="size-1/2" />
+            </a>
+          </Button>
           {loading ? (
             <Button
               variant="outline"
